@@ -2,6 +2,9 @@
 
 Analyzing and allele-calling of MPS FASTQ files. This software is part of the [DNASeqEx project](https://www.researchgate.net/project/DNASEQEX).
 
+![European Commission Logo](https://ec.europa.eu/ec_portal/2016/images/logo/logo-splashpage.png)
+
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
