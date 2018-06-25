@@ -7,7 +7,7 @@ Analyzing and allele-calling of MPS FASTQ files. This software is part of the [D
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 ### Prerequisites
 
-As this project is Ruby, you obviously need to have a Ruby interpreter available. Please see [Install Ruby](https://www.ruby-lang.org/en/documentation/installation/) to install Ruby.
+As this project is written Ruby, you obviously need to have a Ruby interpreter available. Please see [Install Ruby](https://www.ruby-lang.org/en/documentation/installation/) to install Ruby.
 
 ```
 ruby -v
@@ -17,7 +17,7 @@ ruby -v
 
 First we need to install a ruby package manager called bundler. Please see [Install Bundler](https://bundler.io/) to do so.
 
-That will giv us the needed `bundle` command.
+That will give us the needed `bundle` command.
 
 ```
 bundle -v
@@ -32,7 +32,7 @@ will install all dependencies automatically.
 
 ## Running an example
 
-We want to analyse only the STRs of an Illumina FGx HSC FASTQ file pair (read r1 and R2 are in two different files) in the example folder of our project:
+We want to analyse only the STRs of an Illumina FGx HSC FASTQ file pair (read R1 and R2 are in two different files) in the example folder of our project:
 
 ```
 ls -l example
@@ -52,23 +52,23 @@ The resulting `example/CALL.xlsx` is out output file.
 ## Command line parameters
 
 ```
-Usage: ./wintermute.rb \[options\] <R1 FILE>
-        --\[no-\]calling               \[Do\]/\[Don't do\] STR/SNP calling (default: true)
-        --\[no-\]survey                \[Do\]/\[Don't\] summarize all assigned sequences into one directory/file (default: false)
-        --\[no-\]statistics            \[Do\]/\[Don't\] output a separate statistics file (default: false)
-    -v, --\[no-\]verbose               Run verbosely (default: false)
-    -c, --config \<filename\>          Configuarion file for PCR mix used (default: "./config/illumina_forenseq.json")
-    -f, --\[no-\]force                 Overwrite result file(s) (default: false)
+Usage: ./wintermute.rb [options] <R1 FILE>
+        --[no-]calling               [Do]/[Don't do] STR/SNP calling (default: true)
+        --[no-]survey                [Do]/[Don't] summarize all assigned sequences into one directory/file (default: false)
+        --[no-]statistics            [Do]/[Don't] output a separate statistics file (default: false)
+    -v, --[no-]verbose               Run verbosely (default: false)
+    -c, --config <filename>          Configuarion file for PCR mix used (default: "./config/illumina_forenseq.json")
+    -f, --[no-]force                 Overwrite result file(s) (default: false)
     -o, --output-calling FILE        STR/SNP calls output filename
     -r, --references FILE            Assign sequences to references stored in FILE
-        --\[no-\]dynamic-q             Determine minimal Q-value dynamically based on R1/R2 (default: true)
-        --\[no-\]n-trim                Trim at first N (default: true)
+        --[no-]dynamic-q             Determine minimal Q-value dynamically based on R1/R2 (default: true)
+        --[no-]n-trim                Trim at first N (default: true)
         --append                     Append results to existing file (requires -o)
         --no-r2                      Don't automatically determine and load R2 (default: false)
-        --\[no-\]adapter-trimming      Do/Don't trim adapter sequences (default: true)
-        --\[no-\]primer-trimming       Do/Don't trim primer sequences (default: true)
+        --[no-]adapter-trimming      Do/Don't trim adapter sequences (default: true)
+        --[no-]primer-trimming       Do/Don't trim primer sequences (default: true)
         --require-adapter            Filter sequences that doesn't meet adapter requirements (specified in config file) (default: false)
-        --only x\[,y,..,z\]            Only this kind of marker(s): str, snp, x\[-chromosomal\], y\[-chromosomal\] and a\[utosomal\] (default: all)
+        --only x[,y,..,z]            Only this kind of marker(s): str, snp, x[-chromosomal], y[-chromosomal] and a[utosomal] (default: all)
         --no-match-forward           Sequence matching (STR/SNP) is performed only by matchng with reverse primer (default: true)
         --no-match-reverse           Sequence matching (STR/SNP) is performed only by matchng with forward primer (default: true)
         --max-n N                    Maximal number of N within matching primers and R1/R2 first 20 bases (default: 3)
@@ -79,10 +79,6 @@ Usage: ./wintermute.rb \[options\] <R1 FILE>
         --min-variant-reads-ratio N  Minimal ratio of reads (relative to summarized target reads with same length) to consider a variant (default: 0.05)
         --min-call-ratio N           Minimal ratio of reads (relative to summarized target reads) to call a sequence
 ```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
