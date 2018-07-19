@@ -10,7 +10,7 @@ class FastTargetMatchingAlgorithm < AlignmentAlgorithm
     :no_forward_partial_exact_match => false,
     :forward_partial_exact_match_not_within_range => false,
     :forward_partial_exact_match_too_many_Ns => false,
-    :r2_detected_but_no_reverse_partial_exact_match => false,
+#    :r2_detected_but_no_reverse_partial_exact_match => false,
     :no_reverse_partial_exact_match => false,
     :reverse_partial_exact_match_too_many_Ns => false,
     :forward_partial_exact_match_after_reverse_partial_exact_match => false,
@@ -22,7 +22,7 @@ class FastTargetMatchingAlgorithm < AlignmentAlgorithm
 
   def initialize(_max_score = 1.0, _penalties = nil, _options = {})
     super(_max_score, _penalties)
-    @options = {:scan_for_r2 => true, :max_n => 3, :match_forward => true, :match_reverse => true, :primer_trimming => true, :max_distance_forward_primer_sequence_start => 3, :max_primer_half_levenshtein_distance => 1}.update(_options)
+    @options = {:max_n => 3, :match_forward => true, :match_reverse => true, :primer_trimming => true, :max_distance_of_forward_sequence_from_start => -1, :max_primer_half_levenshtein_distance => 1}.update(_options)
   end
 
   def match(target, sequence)
@@ -130,18 +130,18 @@ private
     if found_forward_pos.nil?
       return no_forward_match_reason || [:no_forward_partial_exact_match]
     else
-      if sequence[found_forward_pos...(found_forward_pos + target.forward_primer.length)].count('N') > @options[:max_n]
+      if @options[:max_n] && sequence[found_forward_pos...(found_forward_pos + target.forward_primer.length)].count('N') > @options[:max_n]
         return [:forward_partial_exact_match_too_many_Ns]
-      elsif found_forward_pos > @options[:max_distance_forward_primer_sequence_start]
+      elsif @options[:max_distance_of_forward_sequence_from_start] >= 0 && found_forward_pos > @options[:max_distance_of_forward_sequence_from_start]
         return [:forward_partial_exact_match_not_within_range]
       else
         # check r2 match if availabe and desired
-        if @options[:scan_for_r2] && (pos = sequence.index(FASTQ::R1_R2_SPLITER))
-          r2 = sequence[(pos + FASTQ::R1_R2_SPLITER.length) .. -1]
-          if r2.index(target.reverse_primer.first_half).nil? && r2.index(target.reverse_primer.second_half).nil?
-            return [:r2_detected_but_no_reverse_partial_exact_match]
-          end
-        end
+        # if @options[:scan_for_r2] && (pos = sequence.index(FASTQ::R1_R2_SPLITER))
+        #   r2 = sequence[(pos + FASTQ::R1_R2_SPLITER.length) .. -1]
+        #   if r2.index(target.reverse_primer.first_half).nil? && r2.index(target.reverse_primer.second_half).nil?
+        #     return [:r2_detected_but_no_reverse_partial_exact_match]
+        #   end
+        # end
 
         if target.empty_reverse_primer? || !@options[:match_reverse]
           found_reverse_pos = sequence.length
@@ -156,7 +156,7 @@ private
         # we found a potential match! check with real alignemnt
         if found_reverse_pos.nil?
           return [:no_reverse_partial_exact_match]
-        elsif sequence[found_reverse_pos...(found_reverse_pos + target.reverse_primer.length)].count('N') > @options[:max_n]
+        elsif @options[:max_n] && sequence[found_reverse_pos...(found_reverse_pos + target.reverse_primer.length)].count('N') > @options[:max_n]
           return [:reverse_partial_exact_match_too_many_Ns]
         else
           if found_forward_pos >= found_reverse_pos

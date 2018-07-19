@@ -40,6 +40,39 @@ module SequenceHelper
     'n' => '[ACGT]?'
   }
   
+  IUPAC_IUPAC_REGEXP = {
+    'A' => '[NA]',
+    'G' => '[NG]',
+    'C' => '[NC]',
+    'T' => '[NT]',
+    'Y' => '[NYCT]',
+    'R' => '[NRAG]',
+    'S' => '[NSGC]',
+    'W' => '[NWAT]',
+    'K' => '[NKTG]',
+    'M' => '[NMAC]',
+    'B' => '[NBSKYCGT]',
+    'D' => '[NDRKWAGT]',
+    'H' => '[NHMYWACT]',
+    'V' => '[NVMSRACG]',
+    'N' => '.',
+    'a' => 'A?',
+    'c' => 'C?',
+    'g' => 'G?',
+    't' => 'T?',
+    'y' => '[YCT]?',
+    'r' => '[RAG]?',
+    's' => '[SGC]?',
+    'w' => '[WAT]?',
+    'k' => '[KTG]?',
+    'm' => '[MAC]?',
+    'b' => '[BCGT]?',
+    'd' => '[DAGT]?',
+    'h' => '[HACT]?',
+    'v' => '[VACG]?',
+    'n' => '[YRSWKMBDHVACGT]?'
+  }
+  
   COMPLEMENT_MAP = {
    'A' => 'T',
    'T' => 'A',
@@ -77,7 +110,7 @@ module SequenceHelper
   end
 
   def self.n_to_nucleotide_map(sequences, _options = {})
-    options = {:min_variant_reads => 1}.update(_options)
+    options = {:min_variant_reads => 1, :min_call_ratio => 0.01}.update(_options)
     map = []
 
     nucleotide_counts = sequences.first.chars.inject([]){|t, x| t << {}}
@@ -100,16 +133,16 @@ module SequenceHelper
     map
   end
 
-  def self.histogram_joiner(arr, _options = {})
-    options = {:min_variant_reads => 1}.update(_options)
-    arr_by_length = {}
-    arr.each do |elem|
-      arr_by_length[elem.length] = [] unless arr_by_length[elem.length]
-      arr_by_length[elem.length] << elem
+  def self.histogram_joiner(sequences, _options = {})
+    options = {:min_variant_reads => 1, :min_call_ratio => 0.01}.update(_options)
+    sequences_by_length = {}
+    sequences.each do |elem|
+      sequences_by_length[elem.length] = [] unless sequences_by_length[elem.length]
+      sequences_by_length[elem.length] << elem
     end
 
     hsh = {}
-    arr_by_length.each do |l, elems|
+    sequences_by_length.each do |l, elems|
       n_to_nucleotide_map(elems, options).each do |i, c|
         elems.size.times do |j|
           elems[j][i] = c if elems[j][i] == 'N'
@@ -120,6 +153,10 @@ module SequenceHelper
         hsh[elem] = hsh[elem].to_i + 1
       end
     end
+
+    max_count = hsh.values.max.to_f
+    hsh.delete_if{|sequence, count| options[:min_call_ratio] && count < (max_count * options[:min_call_ratio])}
+
     hsh
   end
 
@@ -138,4 +175,9 @@ module SequenceHelper
   def self.iupac_to_rregex(s)
     Regexp.new(s.chars.map{|c| IUPAC_REGEXP.has_key?(c) ? IUPAC_REGEXP[c] : c}.join + '.*$')
   end
+
+  def self.iupac_to_regex_to_match_iupac(s)
+    Regexp.new(s.chars.map{|c| IUPAC_IUPAC_REGEXP.has_key?(c) ? IUPAC_IUPAC_REGEXP[c] : c}.join)
+  end
+
 end

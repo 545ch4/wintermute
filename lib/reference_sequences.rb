@@ -1,0 +1,1 @@
+REFERENCE_SEQUENCES = JSON.load(File.read(File.join(File.dirname(__FILE__), '..', 'config', 'reference_sequences_grch38.json')))
